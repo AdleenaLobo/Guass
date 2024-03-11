@@ -1,50 +1,55 @@
-
-import java.util.*;
-
-public class Main
-{
-	
-    public static void main(String[] args) {
-        double[][] augmentedMatrix = {
+/*       double[][] augmentedMatrix = {
                 {2, 1, -1, 8},
                 {-3, -1, 2, -11},
                 {-2, 1, 2, -3}
-        };
+        };*/
+package pracs;
 
-        solveSystemOfEquations(augmentedMatrix);
+import java.util.Scanner;
 
-        // Display the solution
-        System.out.println("Solution:");
-        for (int i = 0; i < augmentedMatrix.length; i++) {
-            System.out.println("x" + (i + 1) + " = " + augmentedMatrix[i][augmentedMatrix[i].length - 1]);
-        }
-    }
+public class GaussianElimination {
 
-    private static void solveSystemOfEquations(double[][] augmentedMatrix) {
-        int rows = augmentedMatrix.length;
-        int cols = augmentedMatrix[0].length - 1; // Last column is the augmented part
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
 
-        for (int i = 0; i < rows - 1; i++) {
-            // Make the diagonal element of the current row equal to 1
-            double diagonalElement = augmentedMatrix[i][i];
-            for (int j = i; j < cols + 1; j++) {
-                augmentedMatrix[i][j] /= diagonalElement;
+        System.out.println("Enter the number of variables: ");
+        int n = in.nextInt();
+
+        // Create an augmented matrix
+        int[][] matrix = new int[n][n + 1];
+
+        // Input coefficients with constants
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= n; j++) {
+                System.out.println("Enter coefficients with constant for equation " + (i + 1) + ": ");
+                matrix[i][j] = in.nextInt();
             }
+        }
 
-            // Make the elements below the diagonal in the current column equal to 0
-            for (int k = i + 1; k < rows; k++) {
-                double factor = augmentedMatrix[k][i];
-                for (int j = i; j < cols + 1; j++) {
-                    augmentedMatrix[k][j] -= factor * augmentedMatrix[i][j];
+        // Apply Gaussian Elimination
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                double ratio = (double) matrix[j][i] / matrix[i][i];
+                for (int k = 0; k <= n; k++) {
+                    matrix[j][k] -= ratio * matrix[i][k];
                 }
             }
         }
 
-        // Back substitution
-        for (int i = rows - 1; i >= 0; i--) {
-            for (int j = i + 1; j < cols; j++) {
-                augmentedMatrix[i][cols] -= augmentedMatrix[i][j] * augmentedMatrix[j][cols];
+        // Back substitution to find solutions
+        double[] solutions = new double[n];
+        for (int i = n - 1; i >= 0; i--) {
+            double sum = 0.0;
+            for (int j = i + 1; j < n; j++) {
+                sum += matrix[i][j] * solutions[j];
             }
+            solutions[i] = (matrix[i][n] - sum) / matrix[i][i];
+        }
+
+        // Output the solutions
+        System.out.println("Solutions:");
+        for (int i = 0; i < n; i++) {
+            System.out.println("x" + (i + 1) + ": " + solutions[i]);
         }
     }
 }
